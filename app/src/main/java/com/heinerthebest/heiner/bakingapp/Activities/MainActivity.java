@@ -13,9 +13,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.heinerthebest.heiner.bakingapp.Adapters.RecipeAdapter;
+import com.heinerthebest.heiner.bakingapp.Fragments.IngredientsFragment;
 import com.heinerthebest.heiner.bakingapp.Fragments.RecipeFragment;
 import com.heinerthebest.heiner.bakingapp.Interface.GetDataService;
 import com.heinerthebest.heiner.bakingapp.Interfaces.RecipeClickListener;
+import com.heinerthebest.heiner.bakingapp.Models.Ingredient;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 import com.heinerthebest.heiner.bakingapp.R;
 import com.heinerthebest.heiner.bakingapp.RetrofitClientInstance;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         final RecipeFragment recipeFragment = new RecipeFragment();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
 
         fragmentManager.beginTransaction()
                 .add(R.id.recipe_container, recipeFragment)
@@ -57,6 +59,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 recipes = recipeFragment.getRecipes();
                 Log.d(TAG,"Heiner guess what? that work i can said the second recipe is: "+recipes.get(1).getName());
+
+
+
+                IngredientsFragment ingredientsFragment = new IngredientsFragment();
+                String ingredients = "";
+                int tmp =1;
+                for (Ingredient ingr : recipeFragment.getRecipes().get(0).getIngredients())
+                {
+
+                    ingredients = ingredients+tmp+") "+ingr.getQuantity()+" "+ingr.getMeasure()+" of "+ingr.getIngredient()+"\n";
+                    tmp++;
+                }
+
+                ingredientsFragment.setIngredients(ingredients);
+                fragmentManager.beginTransaction()
+                        .add(R.id.ingredients_container, ingredientsFragment)
+                        .commit();
 
             }
         });
