@@ -8,12 +8,33 @@ public class Recipe
     String name;
     ArrayList<Ingredient> ingredients;
     ArrayList<Step> steps;
+    int servings;
+    String image;
 
-    public Recipe(int id, String name, ArrayList<Ingredient> ingredients, ArrayList<Step> steps) {
+    public int getServings() {
+        return servings;
+    }
+
+    public void setServings(int servings) {
+        this.servings = servings;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Recipe(int id, String name, ArrayList<Ingredient> ingredients, ArrayList<Step> steps, int servings, String image) {
+
         this.id = id;
         this.name = name;
         this.ingredients = ingredients;
         this.steps = steps;
+        this.servings = servings;
+        this.image = image;
     }
 
     public int getId() {

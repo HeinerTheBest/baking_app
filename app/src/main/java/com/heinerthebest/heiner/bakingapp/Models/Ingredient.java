@@ -2,21 +2,21 @@ package com.heinerthebest.heiner.bakingapp.Models;
 
 public class Ingredient
 {
-    int quantity;
+    Float quantity;
     String measure;
     String ingredient;
 
-    public Ingredient(int quantity, String measure, String ingredient) {
+    public Ingredient(Float quantity, String measure, String ingredient) {
         this.quantity = quantity;
         this.measure = measure;
         this.ingredient = ingredient;
     }
 
-    public int getQuantity() {
+    public Float getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Float quantity) {
         this.quantity = quantity;
     }
 
