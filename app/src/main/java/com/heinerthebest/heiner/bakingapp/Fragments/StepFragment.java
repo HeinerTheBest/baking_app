@@ -1,6 +1,5 @@
 package com.heinerthebest.heiner.bakingapp.Fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.heinerthebest.heiner.bakingapp.Adapters.RecipeAdapter;
+import com.heinerthebest.heiner.bakingapp.Adapters.StepAdapter;
 import com.heinerthebest.heiner.bakingapp.Interface.GetDataService;
 import com.heinerthebest.heiner.bakingapp.Interfaces.RecipeClickListener;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
+import com.heinerthebest.heiner.bakingapp.Models.Step;
 import com.heinerthebest.heiner.bakingapp.R;
 import com.heinerthebest.heiner.bakingapp.RetrofitClientInstance;
 
@@ -26,20 +27,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RecipeFragment extends Fragment implements RecipeClickListener
+public class StepFragment extends Fragment implements RecipeClickListener
 {
 
     // Tag for logging
-    private static final String TAG = RecipeFragment.class.getSimpleName();
+    private static final String TAG = StepFragment.class.getSimpleName();
 
     // Variables to store a list of recipes
-    private List<Recipe> recipes;
-    private RecipeAdapter adapter;
+    private List<Step> steps;
+    private StepAdapter adapter;
     private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecipeClickListener recipeClickListener;
 
-    public RecipeFragment() {
+    public StepFragment() {
     }
 
     @Nullable
@@ -51,30 +52,10 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
         layoutManager = new LinearLayoutManager(rootView.getContext());
         recipeClickListener = this;
 
+        adapter = new StepAdapter(steps,rootView.getContext(),recipeClickListener);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
 
-
-
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<List<Recipe>> call = service.getAllRecipes();
-        call.enqueue(new Callback<List<Recipe>>() {
-            @Override
-            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                recipes = response.body();
-                adapter = new RecipeAdapter(rootView.getContext(),recipes,recipeClickListener);
-                recyclerView.setLayoutManager(layoutManager);
-                recyclerView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                Toast.makeText(rootView.getContext(), "Something went wrong...Please try later! "+t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d(TAG,"error was: "+t.getMessage());
-            }
-        });
-
-
-
-        // Return the rootView
         return rootView;
     }
 
@@ -86,11 +67,16 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
 //        intent.putExtra(Intent.EXTRA_INDEX,clickedRecipeId);
 //        startActivity(intent);
 
-        Log.d(TAG,"You click one : "+ recipes.get(clickedMovieIndex).getId());
+        Log.d(TAG,"You click one : "+ steps.get(clickedMovieIndex).getId());
     }
 
 
-    public List<Recipe> getRecipes() {
-        return recipes;
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<Step> steps) {
+
+        this.steps = steps;
     }
 }
