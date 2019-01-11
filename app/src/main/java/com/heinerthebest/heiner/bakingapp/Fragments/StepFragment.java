@@ -10,22 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.heinerthebest.heiner.bakingapp.Adapters.RecipeAdapter;
 import com.heinerthebest.heiner.bakingapp.Adapters.StepAdapter;
-import com.heinerthebest.heiner.bakingapp.Interface.GetDataService;
 import com.heinerthebest.heiner.bakingapp.Interfaces.RecipeClickListener;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 import com.heinerthebest.heiner.bakingapp.Models.Step;
 import com.heinerthebest.heiner.bakingapp.R;
-import com.heinerthebest.heiner.bakingapp.RetrofitClientInstance;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class StepFragment extends Fragment implements RecipeClickListener
 {
@@ -34,9 +26,11 @@ public class StepFragment extends Fragment implements RecipeClickListener
     private static final String TAG = StepFragment.class.getSimpleName();
 
     // Variables to store a list of recipes
+    private Recipe recipe;
     private List<Step> steps;
     private StepAdapter adapter;
     private RecyclerView recyclerView;
+    private final String RECIPE_ID = "recipe_id";
     RecyclerView.LayoutManager layoutManager;
     RecipeClickListener recipeClickListener;
 
@@ -71,12 +65,14 @@ public class StepFragment extends Fragment implements RecipeClickListener
     }
 
 
-    public List<Step> getSteps() {
-        return steps;
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(RECIPE_ID,0);
     }
 
-    public void setSteps(List<Step> steps) {
-
-        this.steps = steps;
+    public void setRecipes(Recipe recipe) {
+        this.recipe = recipe;
+        steps = recipe.getSteps();
     }
+
 }

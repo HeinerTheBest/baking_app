@@ -1,23 +1,19 @@
 package com.heinerthebest.heiner.bakingapp.Activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.heinerthebest.heiner.bakingapp.Adapters.RecipeAdapter;
 import com.heinerthebest.heiner.bakingapp.Fragments.IngredientsFragment;
 import com.heinerthebest.heiner.bakingapp.Fragments.RecipeFragment;
 import com.heinerthebest.heiner.bakingapp.Fragments.StepFragment;
-import com.heinerthebest.heiner.bakingapp.Interface.GetDataService;
-import com.heinerthebest.heiner.bakingapp.Interfaces.RecipeClickListener;
+import com.heinerthebest.heiner.bakingapp.Interfaces.GetDataService;
 import com.heinerthebest.heiner.bakingapp.Models.Ingredient;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 import com.heinerthebest.heiner.bakingapp.R;
@@ -34,56 +30,73 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     List<Recipe> recipes;
     FragmentManager fragmentManager;
+    RecipeFragment recipeFragment;
+    StepFragment stepFragment;
+    IngredientsFragment ingredientsFragment;
+    FrameLayout head;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        recipeFragment = new RecipeFragment();
+        stepFragment = new StepFragment();
+        ingredientsFragment = new IngredientsFragment();
+        head = findViewById(R.id.recipe_container);
+
         context = this;
-
-        final RecipeFragment recipeFragment = new RecipeFragment();
-
-        fragmentManager = getSupportFragmentManager();
-
-        fragmentManager.beginTransaction()
-                .add(R.id.recipe_container, recipeFragment)
-                .commit();
+            fragmentManager = getSupportFragmentManager();
 
 
+            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<List<Recipe>> call = service.getAllRecipes();
+            call.enqueue(new Callback<List<Recipe>>() {
+                @Override
+                public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                    recipes = response.body();
+                    callRecipeFragment(recipes);
+                    Log.d(TAG,"We got the recipes");
+                }
 
-
-        //Demo
-        Button button = findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recipes = recipeFragment.getRecipes();
-                Log.d(TAG,"Heiner guess what? that work i can said the second recipe is: "+recipes.get(1).getName());
-                callIngredientsFragment(0);
-                callStepsFragment(1);
-
-
-
-            }
-        });
-
+                @Override
+                public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                    Toast.makeText(context, "Something went wrong...Please try later! "+t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,"error was: "+t.getMessage());
+                }
+            });
     }
 
 
+    public void callRecipeFragment(List<Recipe> recipes)
+    {
+        recipeFragment.setRecipes(recipes);
+        fragmentManager.beginTransaction()
+                .add(R.id.recipe_container,recipeFragment)
+                .commit();
+    }
+
     public void callStepsFragment(int recipeId)
     {
-        StepFragment stepFragment = new StepFragment();
-        stepFragment.setSteps(recipes.get(recipeId).getSteps());
+        stepFragment.setRecipes(recipes.get(recipeId));
+
+
         fragmentManager.beginTransaction()
                 .add(R.id.steps_container, stepFragment)
                 .commit();
     }
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        head.setVisibility(View.VISIBLE);
+    }
+
     public void callIngredientsFragment(int recipeId)
     {
-        IngredientsFragment ingredientsFragment = new IngredientsFragment();
+        setTitle(recipes.get(recipeId).getName());
         String ingredients = "";
         int tmp =1;
         for (Ingredient ingr : recipes.get(recipeId).getIngredients())
@@ -93,10 +106,15 @@ public class MainActivity extends AppCompatActivity {
             tmp++;
         }
 
+
         ingredientsFragment.setIngredients(ingredients);
         fragmentManager.beginTransaction()
                 .add(R.id.ingredients_container, ingredientsFragment)
                 .commit();
+        head.setVisibility(View.GONE);
+
+
+        callStepsFragment(recipeId);
     }
 
     public String setIngredientText(Ingredient ingredient,int index)

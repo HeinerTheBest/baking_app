@@ -1,8 +1,7 @@
-package com.heinerthebest.heiner.bakingapp.Interface;
+package com.heinerthebest.heiner.bakingapp.Interfaces;
 
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
