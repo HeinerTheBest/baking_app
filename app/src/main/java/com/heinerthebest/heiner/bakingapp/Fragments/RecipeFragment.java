@@ -55,7 +55,7 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
 //        final int clickedRecipeId = recipes.get(clickedMovieIndex).getId();
 //        intent.putExtra(Intent.EXTRA_INDEX,clickedRecipeId);
 //        startActivity(intent);
-        ((MainActivity)getActivity()).callIngredientsFragment(clickedMovieIndex);
+        ((MainActivity)getActivity()).callNextActivity(clickedMovieIndex);
         Log.d(TAG,"You click one : "+ recipes.get(clickedMovieIndex).getId());
     }
 

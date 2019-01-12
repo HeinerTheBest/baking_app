@@ -1,20 +1,16 @@
 package com.heinerthebest.heiner.bakingapp.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.heinerthebest.heiner.bakingapp.Fragments.IngredientsFragment;
+import com.heinerthebest.heiner.bakingapp.DataBase.AppDataBase;
 import com.heinerthebest.heiner.bakingapp.Fragments.RecipeFragment;
-import com.heinerthebest.heiner.bakingapp.Fragments.StepFragment;
 import com.heinerthebest.heiner.bakingapp.Interfaces.GetDataService;
-import com.heinerthebest.heiner.bakingapp.Models.Ingredient;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 import com.heinerthebest.heiner.bakingapp.R;
 import com.heinerthebest.heiner.bakingapp.RetrofitClientInstance;
@@ -31,43 +27,97 @@ public class MainActivity extends AppCompatActivity {
     List<Recipe> recipes;
     FragmentManager fragmentManager;
     RecipeFragment recipeFragment;
-    StepFragment stepFragment;
-    IngredientsFragment ingredientsFragment;
-    FrameLayout head;
+
+    private AppDataBase mDb;
+    Thread thread;
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         recipeFragment = new RecipeFragment();
-        stepFragment = new StepFragment();
-        ingredientsFragment = new IngredientsFragment();
-        head = findViewById(R.id.recipe_container);
-
         context = this;
-            fragmentManager = getSupportFragmentManager();
-
-
-            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<List<Recipe>> call = service.getAllRecipes();
-            call.enqueue(new Callback<List<Recipe>>() {
-                @Override
-                public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                    recipes = response.body();
-                    callRecipeFragment(recipes);
-                    Log.d(TAG,"We got the recipes");
-                }
-
-                @Override
-                public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                    Toast.makeText(context, "Something went wrong...Please try later! "+t.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d(TAG,"error was: "+t.getMessage());
-                }
-            });
+        mDb = AppDataBase.getsInstance(getApplicationContext());
+        fragmentManager = getSupportFragmentManager();
+        setData();
     }
 
+    private void setData()
+    {
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(mDb.recipeDao().loadRecipes().size() == 0)
+                {
+                    Log.d(TAG,"Getting From Web");
+                    getDataFromWeb();
+                }
+                else
+                {
+                    Log.d(TAG,"Getting From Local");
+                    getDataFromLocal();
+                }
+            }
+        });
+        thread.start();
+    }
+
+    private void getDataFromWeb()
+    {
+        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<List<Recipe>> call = service.getAllRecipes();
+        call.enqueue(new Callback<List<Recipe>>() {
+            @Override
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                recipes = response.body();
+                thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.recipeDao().insertRecipes(recipes);
+                        callRecipeFragment(recipes);
+                    }
+                });
+                thread.start();
+                // callRecipeFragment(recipes);
+                Log.d(TAG,"We got the recipes");
+            }
+
+            @Override
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                Toast.makeText(context, "Something went wrong...Please try later! "+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG,"error was: "+t.getMessage());
+            }
+        });
+    }
+
+    private void getDataFromLocal()
+    {
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(mDb.recipeDao().loadRecipes().size() > 0)
+                {
+                    Log.d(TAG,"DB is not Empty, Have "+mDb.recipeDao().loadRecipes().size());
+                    final List<Recipe> tmp = mDb.recipeDao().loadRecipes();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callRecipeFragment(tmp);
+                        }
+                    });
+                }
+                else
+                {
+                    Log.d(TAG,"DB is empy");
+                }
+            }
+        });
+        thread.start();
+    }
 
     public void callRecipeFragment(List<Recipe> recipes)
     {
@@ -77,49 +127,12 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void callStepsFragment(int recipeId)
+
+    public void callNextActivity(int idRecipe)
     {
-        stepFragment.setRecipes(recipes.get(recipeId));
-
-
-        fragmentManager.beginTransaction()
-                .add(R.id.steps_container, stepFragment)
-                .commit();
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        head.setVisibility(View.VISIBLE);
-    }
-
-    public void callIngredientsFragment(int recipeId)
-    {
-        setTitle(recipes.get(recipeId).getName());
-        String ingredients = "";
-        int tmp =1;
-        for (Ingredient ingr : recipes.get(recipeId).getIngredients())
-        {
-
-            ingredients = ingredients+setIngredientText(ingr,tmp);
-            tmp++;
-        }
-
-
-        ingredientsFragment.setIngredients(ingredients);
-        fragmentManager.beginTransaction()
-                .add(R.id.ingredients_container, ingredientsFragment)
-                .commit();
-        head.setVisibility(View.GONE);
-
-
-        callStepsFragment(recipeId);
-    }
-
-    public String setIngredientText(Ingredient ingredient,int index)
-    {
-        return index+") "+ingredient.getQuantity()+" "+ingredient.getMeasure()+" of "+ingredient.getIngredient()+"\n";
+        Intent intent = new Intent(context,DescriptionActivity.class);
+        intent.putExtra(Intent.EXTRA_INDEX,idRecipe);
+        startActivity(intent);
     }
 
 }

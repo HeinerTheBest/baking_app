@@ -1,13 +1,21 @@
 package com.heinerthebest.heiner.bakingapp.Models;
 
-import java.util.ArrayList;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class Recipe
 {
+    @PrimaryKey
+    @NonNull
     int id;
     String name;
-    ArrayList<Ingredient> ingredients;
-    ArrayList<Step> steps;
+    List<Ingredient> ingredients;
+    List<Step> steps;
     int servings;
     String image;
 
@@ -27,7 +35,7 @@ public class Recipe
         this.image = image;
     }
 
-    public Recipe(int id, String name, ArrayList<Ingredient> ingredients, ArrayList<Step> steps, int servings, String image) {
+    public Recipe(int id, String name, List<Ingredient> ingredients, List<Step> steps, int servings, String image) {
 
         this.id = id;
         this.name = name;
@@ -53,7 +61,7 @@ public class Recipe
         this.name = name;
     }
 
-    public ArrayList<Ingredient> getIngredients() {
+    public List<Ingredient> getIngredients() {
         return ingredients;
     }
 
@@ -61,7 +69,7 @@ public class Recipe
         this.ingredients = ingredients;
     }
 
-    public ArrayList<Step> getSteps() {
+    public List<Step> getSteps() {
         return steps;
     }
 
