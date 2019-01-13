@@ -2,17 +2,23 @@ package com.heinerthebest.heiner.bakingapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.heinerthebest.heiner.bakingapp.DataBase.AppDataBase;
 import com.heinerthebest.heiner.bakingapp.Fragments.IngredientsFragment;
+import com.heinerthebest.heiner.bakingapp.Fragments.NavigationFragment;
+import com.heinerthebest.heiner.bakingapp.Fragments.StepDescriptionFragment;
 import com.heinerthebest.heiner.bakingapp.Fragments.StepFragment;
+import com.heinerthebest.heiner.bakingapp.Fragments.VideoFragment;
 import com.heinerthebest.heiner.bakingapp.Models.Ingredient;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
+import com.heinerthebest.heiner.bakingapp.Models.Step;
 import com.heinerthebest.heiner.bakingapp.R;
 
 import java.util.List;
@@ -21,11 +27,20 @@ public class DescriptionActivity extends AppCompatActivity {
     private static final String TAG = DescriptionActivity.class.getSimpleName();
     private Context context;
     List<Recipe> recipes;
-    StepFragment stepFragment;
-    IngredientsFragment ingredientsFragment;
     private AppDataBase mDb;
     FragmentManager fragmentManager;
     Thread thread;
+
+    //Fragments
+    StepFragment stepFragment;
+    IngredientsFragment ingredientsFragment;
+    NavigationFragment navigationFragment;
+    StepDescriptionFragment stepDescriptionFragment;
+    VideoFragment videoFragment;
+
+    FrameLayout navigationContainer;
+
+
 
 
 
@@ -35,13 +50,24 @@ public class DescriptionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_description);
-        context = this;
+
+        //Fragments
         stepFragment = new StepFragment();
         ingredientsFragment = new IngredientsFragment();
+        navigationFragment = new NavigationFragment();
+        stepDescriptionFragment = new StepDescriptionFragment();
+        videoFragment = new VideoFragment();
+
+
+
+        context = this;
         mDb = AppDataBase.getsInstance(getApplicationContext());
         fragmentManager = getSupportFragmentManager();
         final int idRecipe = getIntent().getIntExtra(Intent.EXTRA_INDEX,0);
+        Log.d("Follow","I got Recipe id:"+idRecipe);
+
         getRecipes(idRecipe);
+        navigationContainer = findViewById(R.id.bottom_container);
     }
 
     private void getRecipes(final int idRecipe)
@@ -77,13 +103,50 @@ public class DescriptionActivity extends AppCompatActivity {
     }
 
 
+    public Recipe getRecipeById(int id)
+    {
+        for(Recipe recipe:recipes)
+        {
+            if(recipe.getId() == id)
+                return recipe;
+        }
+
+        return recipes.get(id);
+    }
+
     public void callStepsFragment(int recipeId)
     {
-        stepFragment.setRecipes(recipes.get(recipeId));
+        Log.d("Follow","Recipe id:"+recipeId+" in StepsFragment Method");
+
+        stepFragment.setRecipes(getRecipeById(recipeId));
 
 
         fragmentManager.beginTransaction()
-                .add(R.id.steps_container, stepFragment)
+                .add(R.id.body_container, stepFragment)
+                .commit();
+    }
+
+    public void callStepsDescriptionFragment(int recipeId,int stepId)
+    {
+        Log.d("Follow","receiving Recipe id:"+recipeId+" in CallStepDescription");
+
+        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.body_container,stepDescriptionFragment)
+                .commit();
+        callVideoFragment(recipeId,stepId);
+        Log.d("Follow","Sending Recipe id:"+recipeId+" to navigationFragment ");
+        callNavigationFragment(recipeId,stepId);
+    }
+
+    public void callVideoFragment(int recipeId, int stepId)
+    {
+        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.head_container,videoFragment)
                 .commit();
     }
 
@@ -91,7 +154,7 @@ public class DescriptionActivity extends AppCompatActivity {
     {
         String ingredients = "";
         int tmp =1;
-        for (Ingredient ingr : recipes.get(recipeId).getIngredients())
+        for (Ingredient ingr : getRecipeById(recipeId).getIngredients())
         {
 
             ingredients = ingredients+setIngredientText(ingr,tmp);
@@ -99,8 +162,32 @@ public class DescriptionActivity extends AppCompatActivity {
         }
         ingredientsFragment.setIngredients(ingredients);
         fragmentManager.beginTransaction()
-                .add(R.id.ingredients_container, ingredientsFragment)
+                .add(R.id.head_container, ingredientsFragment)
                 .commit();
+    }
+
+    public void callNavigationFragment(int recipeId,int stepId)
+    {
+        navigationFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+
+
+        navigationContainer.setVisibility(View.VISIBLE);
+        fragmentManager.beginTransaction()
+                .add(R.id.bottom_container,navigationFragment)
+                .commit();
+
+    }
+
+    public void callNavigationFragment(List<Step> steps,int stepId)
+    {
+        navigationFragment.setSteps(steps,stepId);
+
+
+        navigationContainer.setVisibility(View.VISIBLE);
+        fragmentManager.beginTransaction()
+                .replace(R.id.bottom_container,navigationFragment)
+                .commit();
+
     }
 
     public String setIngredientText(Ingredient ingredient,int index)

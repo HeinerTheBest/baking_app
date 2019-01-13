@@ -5,16 +5,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout android:id="@+id/ingredients_container"
+    <FrameLayout android:id="@+id/head_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.25"
+        android:layout_weight="0.35"
         android:scaleType="centerInside"/>
 
-    <FrameLayout android:id="@+id/steps_container"
+    <FrameLayout android:id="@+id/body_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.75"
+        android:scaleType="centerInside"/>
+
+    <FrameLayout android:id="@+id/bottom_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:layout_weight="0.15"
         android:scaleType="centerInside"/>
 
 

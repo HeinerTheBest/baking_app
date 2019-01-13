@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.heinerthebest.heiner.bakingapp.Activities.DescriptionActivity;
+import com.heinerthebest.heiner.bakingapp.Activities.MainActivity;
 import com.heinerthebest.heiner.bakingapp.Adapters.StepAdapter;
 import com.heinerthebest.heiner.bakingapp.Interfaces.RecipeClickListener;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
@@ -56,12 +58,10 @@ public class StepFragment extends Fragment implements RecipeClickListener
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-//        Intent intent = new Intent(context,RecipeDetailActivity.class);
-//        final int clickedRecipeId = recipes.get(clickedMovieIndex).getId();
-//        intent.putExtra(Intent.EXTRA_INDEX,clickedRecipeId);
-//        startActivity(intent);
+        Log.d("Follow","Recipe id:"+recipe.getId()+" in "+StepFragment.class.getSimpleName());
 
-        Log.d(TAG,"You click one : "+ steps.get(clickedMovieIndex).getId());
+        ((DescriptionActivity)getActivity()).callStepsDescriptionFragment(recipe.getId(),steps.get(clickedMovieIndex).getId());
+        Log.d(TAG,"You click Step: "+ steps.get(clickedMovieIndex).getId()+" of "+steps.size()+" of Recipe: "+recipe.getId());
     }
 
 
@@ -71,6 +71,8 @@ public class StepFragment extends Fragment implements RecipeClickListener
     }
 
     public void setRecipes(Recipe recipe) {
+        Log.d("Follow","Receive in the Recipe id:"+recipe.getId()+" in StepFragment Fragment");
+
         this.recipe = recipe;
         steps = recipe.getSteps();
     }

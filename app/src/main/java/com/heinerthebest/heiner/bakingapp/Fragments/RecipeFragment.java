@@ -51,10 +51,6 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-//        Intent intent = new Intent(context,RecipeDetailActivity.class);
-//        final int clickedRecipeId = recipes.get(clickedMovieIndex).getId();
-//        intent.putExtra(Intent.EXTRA_INDEX,clickedRecipeId);
-//        startActivity(intent);
         ((MainActivity)getActivity()).callNextActivity(clickedMovieIndex);
         Log.d(TAG,"You click one : "+ recipes.get(clickedMovieIndex).getId());
     }

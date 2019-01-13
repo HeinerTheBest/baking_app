@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void callNextActivity(int idRecipe)
     {
+        Log.d("Follow","Recipe id:"+idRecipe);
         Intent intent = new Intent(context,DescriptionActivity.class);
         intent.putExtra(Intent.EXTRA_INDEX,idRecipe);
         startActivity(intent);
