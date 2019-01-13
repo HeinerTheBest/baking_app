@@ -27,6 +27,7 @@ public class NavigationFragment extends Fragment
     StepDescriptionFragment stepDescriptionFragment;
     VideoFragment videoFragment;
     ImageView superLeft,superright,left,right;
+    Boolean isTablet;
 
     public NavigationFragment() {
     }
@@ -43,13 +44,30 @@ public class NavigationFragment extends Fragment
 
         lastIndex = steps.size()-1;
 
-        stepDescriptionFragment = (StepDescriptionFragment) getActivity()
-                .getSupportFragmentManager()
-                .findFragmentById(R.id.body_container);
 
-        videoFragment = (VideoFragment) getActivity()
-                .getSupportFragmentManager()
-                .findFragmentById(R.id.head_container);
+
+        isTablet =  ((DescriptionActivity)getActivity()).isTablet(rootView.getContext());
+
+        if(isTablet)
+        {
+            videoFragment = (VideoFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentById(R.id.video_container);
+
+            stepDescriptionFragment = (StepDescriptionFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentById(R.id.step_description_container);
+        }
+        else
+        {
+            videoFragment = (VideoFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentById(R.id.head_container);
+
+            stepDescriptionFragment = (StepDescriptionFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentById(R.id.body_container);
+        }
 
 
         setButtons();

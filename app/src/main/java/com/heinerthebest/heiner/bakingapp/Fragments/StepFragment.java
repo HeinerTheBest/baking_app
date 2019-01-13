@@ -35,6 +35,7 @@ public class StepFragment extends Fragment implements RecipeClickListener
     private final String RECIPE_ID = "recipe_id";
     RecyclerView.LayoutManager layoutManager;
     RecipeClickListener recipeClickListener;
+    Boolean isTablet;
 
     public StepFragment() {
     }
@@ -52,16 +53,36 @@ public class StepFragment extends Fragment implements RecipeClickListener
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
+        isTablet =  ((DescriptionActivity)getActivity()).isTablet(rootView.getContext());
+
+
         return rootView;
     }
 
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-        Log.d("Follow","Recipe id:"+recipe.getId()+" in "+StepFragment.class.getSimpleName());
 
-        ((DescriptionActivity)getActivity()).callStepsDescriptionFragment(recipe.getId(),steps.get(clickedMovieIndex).getId());
-        Log.d(TAG,"You click Step: "+ steps.get(clickedMovieIndex).getId()+" of "+steps.size()+" of Recipe: "+recipe.getId());
+
+        if(isTablet)
+        {
+            StepDescriptionFragment stepDescriptionFragment;
+            VideoFragment videoFragment;
+
+            videoFragment = (VideoFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentById(R.id.video_container);
+
+            stepDescriptionFragment = (StepDescriptionFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentById(R.id.step_description_container);
+
+            stepDescriptionFragment.setDescription(clickedMovieIndex);
+            videoFragment.setVideo(clickedMovieIndex);
+        }
+        else {
+            ((DescriptionActivity) getActivity()).callStepsDescriptionFragment(recipe.getId(), steps.get(clickedMovieIndex).getId());
+        }
     }
 
 

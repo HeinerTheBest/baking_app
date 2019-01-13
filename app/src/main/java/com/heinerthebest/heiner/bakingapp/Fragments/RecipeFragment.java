@@ -29,6 +29,7 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
     private List<Recipe> recipes;
     RecyclerView.LayoutManager layoutManager;
     RecipeClickListener recipeClickListener;
+    Boolean isTablet;
 
     public RecipeFragment() {
     }
@@ -37,13 +38,24 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
+        isTablet = ((MainActivity)getActivity()).isTablet(rootView.getContext());
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.rv_recipes);
-        layoutManager = new LinearLayoutManager(rootView.getContext());
+                        RecyclerView recyclerView = rootView.findViewById(R.id.rv_recipes);
+
+
+        if(isTablet)
+            {
+                recyclerView.setLayoutManager(new android.support.v7.widget.GridLayoutManager(rootView.getContext(), 3));
+            }
+            else
+             {
+                        layoutManager = new LinearLayoutManager(rootView.getContext());
+                        recyclerView.setLayoutManager(layoutManager);
+
+             }
         recipeClickListener = this;
 
         RecipeAdapter adapter = new RecipeAdapter(rootView.getContext(), recipes, recipeClickListener);
-        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         return rootView;
     }

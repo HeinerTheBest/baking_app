@@ -2,6 +2,7 @@ package com.heinerthebest.heiner.bakingapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -68,6 +69,16 @@ public class DescriptionActivity extends AppCompatActivity {
 
         getRecipes(idRecipe);
         navigationContainer = findViewById(R.id.bottom_container);
+
+
+
+    }
+
+
+    public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     private void getRecipes(final int idRecipe)
@@ -90,6 +101,12 @@ public class DescriptionActivity extends AppCompatActivity {
 
                             callIngredientsFragment(idRecipe);
                             callStepsFragment(idRecipe);
+
+                            //Create Info for tablet
+                            if(isTablet(context))
+                            {
+                                createStepsDescriptionFragment(idRecipe,0);
+                            }
                         }
                     });
                 }
@@ -132,12 +149,34 @@ public class DescriptionActivity extends AppCompatActivity {
 
         stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
 
+        if(isTablet(context))
+        {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.step_description_container,stepDescriptionFragment)
+                    .commit();
+        }
+        else
+        {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.body_container,stepDescriptionFragment)
+                    .commit();
+            callVideoFragment(recipeId,stepId);
+            callNavigationFragment(recipeId,stepId);
+
+        }
+
+    }
+
+    public void createStepsDescriptionFragment(int recipeId,int stepId)
+    {
+        Log.d("Follow","receiving Recipe id:"+recipeId+" in CallStepDescription");
+
+        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
 
         fragmentManager.beginTransaction()
-                .replace(R.id.body_container,stepDescriptionFragment)
+                .add(R.id.step_description_container,stepDescriptionFragment)
                 .commit();
-        callVideoFragment(recipeId,stepId);
-        Log.d("Follow","Sending Recipe id:"+recipeId+" to navigationFragment ");
+        createVideoFragment(recipeId,stepId);
         callNavigationFragment(recipeId,stepId);
     }
 
@@ -145,8 +184,25 @@ public class DescriptionActivity extends AppCompatActivity {
     {
         videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
 
+        if(isTablet(context))
+        {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.video_container,videoFragment)
+                    .commit();
+        }
+        else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.head_container, videoFragment)
+                    .commit();
+        }
+    }
+
+    public void createVideoFragment(int recipeId, int stepId)
+    {
+        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+
         fragmentManager.beginTransaction()
-                .replace(R.id.head_container,videoFragment)
+                .add(R.id.video_container,videoFragment)
                 .commit();
     }
 
@@ -178,17 +234,6 @@ public class DescriptionActivity extends AppCompatActivity {
 
     }
 
-    public void callNavigationFragment(List<Step> steps,int stepId)
-    {
-        navigationFragment.setSteps(steps,stepId);
-
-
-        navigationContainer.setVisibility(View.VISIBLE);
-        fragmentManager.beginTransaction()
-                .replace(R.id.bottom_container,navigationFragment)
-                .commit();
-
-    }
 
     public String setIngredientText(Ingredient ingredient,int index)
     {
