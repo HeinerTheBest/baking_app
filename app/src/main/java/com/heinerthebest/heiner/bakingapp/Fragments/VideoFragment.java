@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.heinerthebest.heiner.bakingapp.DataBase.AppDataBase;
 import com.heinerthebest.heiner.bakingapp.Models.Step;
 import com.heinerthebest.heiner.bakingapp.R;
 
@@ -38,6 +39,13 @@ public class VideoFragment extends Fragment
 
     private SimpleExoPlayerView mPlayerView;
     private SimpleExoPlayer mExoPlayer;
+    int recipeId = -1;
+
+    private AppDataBase mDb;
+
+
+    private static final String RECIPE_ARRAY_id_KEY = "recipearraykey";
+    private static final String STEP_ARRAY_id_KEY = "steparraykey";
 
 
     public VideoFragment() {
@@ -53,6 +61,19 @@ public class VideoFragment extends Fragment
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(),R.drawable.question_mark));
 
+        mDb = AppDataBase.getsInstance(rootView.getContext());
+
+
+
+        if(savedInstanceState != null) {
+            if(savedInstanceState.containsKey(RECIPE_ARRAY_id_KEY) && savedInstanceState.containsKey(STEP_ARRAY_id_KEY)) {
+                index = savedInstanceState.getInt(STEP_ARRAY_id_KEY);
+                Log.d(TAG, "My recipe id saved is:" + savedInstanceState.getInt(RECIPE_ARRAY_id_KEY) + " I'm here tooo yeah " );
+                getRecipes(savedInstanceState.getInt(RECIPE_ARRAY_id_KEY));
+            }
+        }
+
+
         setVideo(index);
 
 
@@ -60,21 +81,46 @@ public class VideoFragment extends Fragment
     }
 
 
+    private void getRecipes(final int idRecipe)
+    {
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(mDb.recipeDao().loadRecipes().size() > 0)
+                {
+                    Log.d(TAG,"DB is not Empty, Have "+mDb.recipeDao().loadRecipes().size());
+                    steps = mDb.recipeDao().loadRecipes().get(idRecipe).getSteps();
+                    setVideo(index);
+
+                }
+                else
+                {
+                    Log.d(TAG,"DB is empy");
+                }
+            }
+        });
+        thread.start();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(RECIPE_ARRAY_id_KEY,recipeId);
+        outState.putInt(STEP_ARRAY_id_KEY,index);
+    }
+
     public void initializePlayer(Uri uri)
     {
         String userAgent = Util.getUserAgent(context,"BakingApp");
         if(mExoPlayer == null)
         {
-            // Completed (6): Instantiate a SimpleExoPlayer object using DefaultTrackSelector and DefaultLoadControl.
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl   = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(context,trackSelector,loadControl);
             mPlayerView.setPlayer(mExoPlayer);
 
-            // Completed (7): Prepare the MediaSource using DefaultDataSourceFactory and DefaultExtractorsFactory, as well as the Sample URI you passed in.
             MediaSource mediaSource = new ExtractorMediaSource(uri,new DefaultDataSourceFactory
                     (context,userAgent),new DefaultExtractorsFactory(),null,null);
-            // Completed (8): Prepare the ExoPlayer with the MediaSource, start playing the sample and set the SimpleExoPlayer to the SimpleExoPlayerView.
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
@@ -83,7 +129,6 @@ public class VideoFragment extends Fragment
             mExoPlayer.stop();
             MediaSource mediaSource = new ExtractorMediaSource(uri,new DefaultDataSourceFactory
                     (context,userAgent),new DefaultExtractorsFactory(),null,null);
-            // Completed (8): Prepare the ExoPlayer with the MediaSource, start playing the sample and set the SimpleExoPlayer to the SimpleExoPlayerView.
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
@@ -92,21 +137,15 @@ public class VideoFragment extends Fragment
 
     public void setVideo(int i)
     {
-       /* if(mExoPlayer != null)
-        {
-            mExoPlayer.release();
-        }*/
-        Log.d(TAG,"Playing video "+i+" link "+steps.get(i).getVideoURL());
-        String uri;
-        if(!steps.get(i).getVideoURL().isEmpty())
-        {
-            uri = steps.get(i).getVideoURL();
+        if(steps != null) {
+            String uri;
+            if (!steps.get(i).getVideoURL().isEmpty()) {
+                uri = steps.get(i).getVideoURL();
+            } else {
+                uri = steps.get(i).getThumbnailURL();
+            }
+            initializePlayer(Uri.parse(uri));
         }
-        else
-        {
-            uri = steps.get(i).getThumbnailURL();
-        }
-        initializePlayer(Uri.parse(uri));
     }
 
     @Override
@@ -121,9 +160,10 @@ public class VideoFragment extends Fragment
         mExoPlayer = null;
     }
 
-    public void setSteps(List<Step> steps, int position) {
+    public void setSteps(List<Step> steps, int position, int recipeId) {
         this.steps = steps;
         index = position;
+        this.recipeId = recipeId;
     }
 
 }

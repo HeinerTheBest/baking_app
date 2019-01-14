@@ -2,6 +2,7 @@ package com.heinerthebest.heiner.bakingapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
@@ -66,14 +67,20 @@ public class DescriptionActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
         final int idRecipe = getIntent().getIntExtra(Intent.EXTRA_INDEX,0);
         Log.d("Follow","I got Recipe id:"+idRecipe);
-
         getRecipes(idRecipe);
         navigationContainer = findViewById(R.id.bottom_container);
 
+        if(isTablet(context))
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+        else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
 
     }
-
 
     public static boolean isTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
@@ -101,6 +108,8 @@ public class DescriptionActivity extends AppCompatActivity {
 
                             callIngredientsFragment(idRecipe);
                             callStepsFragment(idRecipe);
+
+
 
                             //Create Info for tablet
                             if(isTablet(context))
@@ -147,7 +156,7 @@ public class DescriptionActivity extends AppCompatActivity {
     {
         Log.d("Follow","receiving Recipe id:"+recipeId+" in CallStepDescription");
 
-        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
 
         if(isTablet(context))
         {
@@ -171,7 +180,7 @@ public class DescriptionActivity extends AppCompatActivity {
     {
         Log.d("Follow","receiving Recipe id:"+recipeId+" in CallStepDescription");
 
-        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
 
         fragmentManager.beginTransaction()
                 .add(R.id.step_description_container,stepDescriptionFragment)
@@ -182,7 +191,7 @@ public class DescriptionActivity extends AppCompatActivity {
 
     public void callVideoFragment(int recipeId, int stepId)
     {
-        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
 
         if(isTablet(context))
         {
@@ -199,7 +208,7 @@ public class DescriptionActivity extends AppCompatActivity {
 
     public void createVideoFragment(int recipeId, int stepId)
     {
-        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
 
         fragmentManager.beginTransaction()
                 .add(R.id.video_container,videoFragment)

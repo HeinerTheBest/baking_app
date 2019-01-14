@@ -28,16 +28,15 @@ public class IngredientsFragment extends Fragment {
 
         TextView tvIngredients = rootView.findViewById(R.id.tv_ingredients);
 
-        // Completed (3) If a list of image ids exists, set the image resource to the correct item in that list
-        // Otherwise, create a Log statement that indicates that the list was not found
+
         if(mIngredients != null){
-            // Set the image resource to the list item at the stored index
             tvIngredients.setText(mIngredients);
+            Log.d(TAG, "This fragment hasn't a null ingredients ");
+
         } else {
-            Log.v(TAG, "This fragment has a null ingredients ");
+            Log.d(TAG, "This fragment has a null ingredients ");
         }
 
-        // Return the rootView
         return rootView;
     }
 

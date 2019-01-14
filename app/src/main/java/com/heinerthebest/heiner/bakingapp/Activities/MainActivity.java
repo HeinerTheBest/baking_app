@@ -2,6 +2,7 @@ package com.heinerthebest.heiner.bakingapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,17 @@ public class MainActivity extends AppCompatActivity {
         mDb = AppDataBase.getsInstance(getApplicationContext());
         fragmentManager = getSupportFragmentManager();
         setData();
+
+        if(isTablet(context))
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+        else
+        {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
+
     }
 
     private void setData()

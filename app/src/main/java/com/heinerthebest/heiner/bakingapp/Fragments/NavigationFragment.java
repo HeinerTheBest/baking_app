@@ -41,8 +41,13 @@ public class NavigationFragment extends Fragment
          left = rootView.findViewById(R.id.btn_left);
          right = rootView.findViewById(R.id.btn_right);
 
-
-        lastIndex = steps.size()-1;
+        if(steps != null) {
+            lastIndex = steps.size() - 1;
+        }
+        else
+        {
+            lastIndex = 0;
+        }
 
 
 
@@ -120,7 +125,6 @@ public class NavigationFragment extends Fragment
 
     public void setButtons()
     {
-        Log.d(TAG,"index is:"+index+" of "+steps.size()+" and last index said:"+lastIndex);
 
         if((index != 0) && (index != lastIndex))
         {
