@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.heinerthebest.heiner.bakingapp.AppWidgetService;
 import com.heinerthebest.heiner.bakingapp.R;
 
 import java.util.List;
@@ -19,14 +20,16 @@ public class IngredientsFragment extends Fragment {
 
     private String TAG = IngredientsFragment.class.getSimpleName();
     private String mIngredients;
+    private String title;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_ingredients, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_ingredients, container, false);
 
         TextView tvIngredients = rootView.findViewById(R.id.tv_ingredients);
+        TextView addWidget = rootView.findViewById(R.id.tv_add_widget);
 
 
         if(mIngredients != null){
@@ -37,6 +40,17 @@ public class IngredientsFragment extends Fragment {
             Log.d(TAG, "This fragment has a null ingredients ");
         }
 
+        addWidget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mIngredients != null)
+                {
+                    AppWidgetService.updateWidget(rootView.getContext(), title,mIngredients);
+
+                }
+            }
+        });
+
         return rootView;
     }
 
@@ -45,8 +59,9 @@ public class IngredientsFragment extends Fragment {
     }
 
 
-    public void setIngredients(String ingredients) {
+    public void setIngredients(String ingredients,String title) {
         mIngredients = ingredients;
+        this.title = title;
     }
 
 }

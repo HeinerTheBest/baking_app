@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.heinerthebest.heiner.bakingapp.AppWidgetService;
 import com.heinerthebest.heiner.bakingapp.DataBase.AppDataBase;
 import com.heinerthebest.heiner.bakingapp.Fragments.IngredientsFragment;
 import com.heinerthebest.heiner.bakingapp.Fragments.NavigationFragment;
@@ -39,6 +40,7 @@ public class DescriptionActivity extends AppCompatActivity {
     NavigationFragment navigationFragment;
     StepDescriptionFragment stepDescriptionFragment;
     VideoFragment videoFragment;
+    String title = "";
 
     FrameLayout navigationContainer;
 
@@ -103,6 +105,7 @@ public class DescriptionActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             setTitle(recipes.get(idRecipe).getName());
+                            title = recipes.get(idRecipe).getName();
                             Log.d(TAG,"you do great "+recipes.get(idRecipe).getIngredients().get(0).getIngredient());
                             Log.d(TAG,"you do great "+recipes.get(idRecipe).getSteps().get(0).getShortDescription());
 
@@ -225,7 +228,9 @@ public class DescriptionActivity extends AppCompatActivity {
             ingredients = ingredients+setIngredientText(ingr,tmp);
             tmp++;
         }
-        ingredientsFragment.setIngredients(ingredients);
+        ingredientsFragment.setIngredients(ingredients,title);
+        AppWidgetService.updateWidget(this, getRecipeById(recipeId).getName(),ingredients);
+
         fragmentManager.beginTransaction()
                 .add(R.id.head_container, ingredientsFragment)
                 .commit();

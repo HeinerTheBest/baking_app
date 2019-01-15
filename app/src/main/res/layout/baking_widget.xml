@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_margin="6dp"
+    android:id="@+id/widget_baking_layout"
+    android:background="@color/white"
+    android:padding="4dp"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+
+
+            <TextView
+                android:id="@+id/widget_tv_steps_description_tittle"
+                android:layout_width="wrap_content"
+                android:padding="15dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:text="@string/prueba" />
+
+
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/widget_tv_step"
+        android:layout_width="match_parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        />
+
+
+</LinearLayout>

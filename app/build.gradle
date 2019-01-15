@@ -50,5 +50,4 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:r2.2.0'
 
 
-
 }
