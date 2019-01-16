@@ -23,4 +23,5 @@ public class ExampleInstrumentedTest {
 
         assertEquals("com.heinerthebest.heiner.bakingapp", appContext.getPackageName());
     }
+
 }
