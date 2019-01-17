@@ -44,7 +44,7 @@ public class DescriptionActivity extends AppCompatActivity {
     VideoFragment videoFragment;
     String title = "";
 
-    private final String NAME_TITLE_KEY = "nametitlekey";
+    public static final String NAME_TITLE_KEY = "nametitlekey";
     FrameLayout navigationContainer;
     String nameRecipe = "";
 

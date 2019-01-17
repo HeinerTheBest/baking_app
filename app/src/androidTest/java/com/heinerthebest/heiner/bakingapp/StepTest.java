@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 
 
 @RunWith(AndroidJUnit4.class)
-public class MainActivityChangeTitleInRecipeTest {
+public class StepTest {
 
     @Rule
     public ActivityTestRule<DescriptionActivity> activityActivityTestRule = new ActivityTestRule<DescriptionActivity>(DescriptionActivity.class);
@@ -39,6 +39,5 @@ public class MainActivityChangeTitleInRecipeTest {
         StepFragment fragment = new StepFragment();
         activityActivityTestRule.getActivity().getSupportFragmentManager().beginTransaction().add(R.id.body_container, fragment).commit();
     }
-
 
 }
