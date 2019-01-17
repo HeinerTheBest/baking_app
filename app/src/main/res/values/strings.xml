@@ -3,4 +3,6 @@
     <string name="prueba">1) two spoon of Sugar \n2) three bowl of milg \n3) Many looove</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="NAME_RECIPE_KEY">recipekey</string>
+    <string name="done">Done</string>
 </resources>

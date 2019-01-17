@@ -63,7 +63,7 @@ public class RecipeFragment extends Fragment implements RecipeClickListener
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-        ((MainActivity)getActivity()).callNextActivity(clickedMovieIndex);
+        ((MainActivity)getActivity()).callNextActivity(clickedMovieIndex,recipes.get(clickedMovieIndex).getName());
         Log.d(TAG,"You click one : "+ recipes.get(clickedMovieIndex).getId());
     }
 

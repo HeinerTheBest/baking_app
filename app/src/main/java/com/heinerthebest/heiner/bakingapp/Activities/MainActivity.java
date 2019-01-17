@@ -141,11 +141,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void callNextActivity(int idRecipe)
+    public void callNextActivity(int idRecipe,String name)
     {
         Log.d("Follow","Recipe id:"+idRecipe);
         Intent intent = new Intent(context,DescriptionActivity.class);
         intent.putExtra(Intent.EXTRA_INDEX,idRecipe);
+        intent.putExtra(getString(R.string.NAME_RECIPE_KEY),name);
         startActivity(intent);
     }
 

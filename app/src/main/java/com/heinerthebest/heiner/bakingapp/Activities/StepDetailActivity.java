@@ -24,7 +24,7 @@ import java.util.List;
 import static com.heinerthebest.heiner.bakingapp.Activities.MainActivity.isTablet;
 
 public class StepDetailActivity extends AppCompatActivity {
-    private static final String TAG = DescriptionActivity.class.getSimpleName();
+    private static final String TAG = StepDetailActivity.class.getSimpleName();
     private Context context;
     List<Recipe> recipes;
     private AppDataBase mDb;
@@ -35,7 +35,6 @@ public class StepDetailActivity extends AppCompatActivity {
     NavigationFragment navigationFragment;
     StepDescriptionFragment stepDescriptionFragment;
     VideoFragment videoFragment;
-    String title = "";
 
     FrameLayout navigationContainer;
 
@@ -87,13 +86,15 @@ public class StepDetailActivity extends AppCompatActivity {
                 {
                     Log.d(TAG,"DB is not Empty, Have "+mDb.recipeDao().loadRecipes().size());
                     recipes = mDb.recipeDao().loadRecipes();
-                    Log.d(TAG,"You click the recipe: "+recipes.get(idRecipe).getName());
+                    //Log.d(TAG,"You click the recipe: "+recipes.get(idRecipe).getName());
+                    Log.d(TAG,"You click the recipe: "+idRecipe);
+
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             setTitle(getRecipeById(idRecipe).getName());
-                            title = recipes.get(idRecipe).getName();
+
 
                                 createStepsDescriptionFragment(idRecipe,0);
                         }
@@ -154,7 +155,7 @@ public class StepDetailActivity extends AppCompatActivity {
                 return recipe;
         }
 
-        return recipes.get(id);
+        return recipes.get(id-1);
     }
 
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +44,9 @@ public class DescriptionActivity extends AppCompatActivity {
     VideoFragment videoFragment;
     String title = "";
 
+    private final String NAME_TITLE_KEY = "nametitlekey";
     FrameLayout navigationContainer;
+    String nameRecipe = "";
 
 
 
@@ -68,8 +72,27 @@ public class DescriptionActivity extends AppCompatActivity {
         mDb = AppDataBase.getsInstance(getApplicationContext());
         fragmentManager = getSupportFragmentManager();
         final int idRecipe = getIntent().getIntExtra(Intent.EXTRA_INDEX,0);
-        Log.d("Follow","I got Recipe id:"+idRecipe);
-        getRecipes(idRecipe);
+
+        
+        if(savedInstanceState != null) {
+            if(savedInstanceState.containsKey(NAME_TITLE_KEY)) {
+                Log.d(TAG,"Right now I'm in instance");
+
+                nameRecipe = savedInstanceState.getString(NAME_TITLE_KEY);
+            }
+        }
+        else
+        {
+            Log.d(TAG,"Right now I'm get it from intent");
+
+            nameRecipe = getIntent().getStringExtra(getString(R.string.NAME_RECIPE_KEY));
+
+        }
+        
+        
+        
+        Log.d(TAG,"Right now the name is = "+nameRecipe);
+        getRecipes(idRecipe,nameRecipe);
         navigationContainer = findViewById(R.id.bottom_container);
 
         if(isTablet(context))
@@ -90,7 +113,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
-    private void getRecipes(final int idRecipe)
+    private void getRecipes(final int idRecipe, final String name)
     {
         thread = new Thread(new Runnable() {
             @Override
@@ -104,20 +127,20 @@ public class DescriptionActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setTitle(getRecipeById(idRecipe).getName());
+                            setTitle(getRecipeById(name).getName());
                             title = recipes.get(idRecipe).getName();
                             Log.d(TAG,"you do great "+recipes.get(idRecipe).getIngredients().get(0).getIngredient());
                             Log.d(TAG,"you do great "+recipes.get(idRecipe).getSteps().get(0).getShortDescription());
 
-                            callIngredientsFragment(idRecipe);
-                            callStepsFragment(idRecipe);
+                            callIngredientsFragment(name);
+                            callStepsFragment(name);
 
 
 
                             //Create Info for tablet
                             if(isTablet(context))
                             {
-                                createStepsDescriptionFragment(idRecipe,0);
+                                createStepsDescriptionFragment(idRecipe,0,name);
                             }
                         }
                     });
@@ -132,22 +155,21 @@ public class DescriptionActivity extends AppCompatActivity {
     }
 
 
-    public Recipe getRecipeById(int id)
+    public Recipe getRecipeById(String name)
     {
         for(Recipe recipe:recipes)
         {
-            if(recipe.getId() == id)
+            if(recipe.getName().equals(name))
                 return recipe;
         }
 
-        return recipes.get(id);
+        return recipes.get(0);
     }
 
-    public void callStepsFragment(int recipeId)
+    public void callStepsFragment(String name)
     {
-        Log.d("Follow","Recipe id:"+recipeId+" in StepsFragment Method");
 
-        stepFragment.setRecipes(getRecipeById(recipeId));
+        stepFragment.setRecipes(getRecipeById(name));
 
 
         fragmentManager.beginTransaction()
@@ -155,92 +177,53 @@ public class DescriptionActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void callStepsDescriptionFragment(int recipeId,int stepId)
+
+    public void createStepsDescriptionFragment(int recipeId,int stepId,String nameRecipe)
     {
         Log.d("Follow","receiving Recipe id:"+recipeId+" in CallStepDescription");
 
-        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
-
-        if(isTablet(context))
-        {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.step_description_container,stepDescriptionFragment)
-                    .commit();
-        }
-        else
-        {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.body_container,stepDescriptionFragment)
-                    .commit();
-            callVideoFragment(recipeId,stepId);
-            callNavigationFragment(recipeId,stepId);
-
-        }
-
-    }
-
-    public void createStepsDescriptionFragment(int recipeId,int stepId)
-    {
-        Log.d("Follow","receiving Recipe id:"+recipeId+" in CallStepDescription");
-
-        stepDescriptionFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
+        stepDescriptionFragment.setSteps(getRecipeById(nameRecipe).getSteps(),stepId,recipeId);
 
         fragmentManager.beginTransaction()
                 .add(R.id.step_description_container,stepDescriptionFragment)
                 .commit();
-        createVideoFragment(recipeId,stepId);
-        callNavigationFragment(recipeId,stepId);
+        createVideoFragment(recipeId,stepId,nameRecipe);
+        callNavigationFragment(nameRecipe,stepId);
     }
 
-    public void callVideoFragment(int recipeId, int stepId)
-    {
-        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
 
-        if(isTablet(context))
-        {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.video_container,videoFragment)
-                    .commit();
-        }
-        else {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.head_container, videoFragment)
-                    .commit();
-        }
-    }
-
-    public void createVideoFragment(int recipeId, int stepId)
+    public void createVideoFragment(int recipeId, int stepId, String name)
     {
-        videoFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId,recipeId);
+        videoFragment.setSteps(getRecipeById(name).getSteps(),stepId,recipeId);
 
         fragmentManager.beginTransaction()
                 .add(R.id.video_container,videoFragment)
                 .commit();
     }
 
-    public void callIngredientsFragment(int recipeId)
+    public void callIngredientsFragment(String nameRecipe)
     {
         String ingredients = "";
         int tmp =1;
-        for (Ingredient ingr : getRecipeById(recipeId).getIngredients())
+        for (Ingredient ingr : getRecipeById(nameRecipe).getIngredients())
         {
 
             ingredients = ingredients+setIngredientText(ingr,tmp);
             tmp++;
         }
         ingredientsFragment.setIngredients(ingredients,title);
-        AppWidgetService.updateWidget(this, getRecipeById(recipeId).getName(),ingredients);
+        AppWidgetService.updateWidget(this, getRecipeById(nameRecipe).getName(),ingredients);
 
         fragmentManager.beginTransaction()
                 .add(R.id.head_container, ingredientsFragment)
                 .commit();
     }
 
-    public void callNavigationFragment( int recipeId,int stepId)
+    public void callNavigationFragment( String nameRecipe,int stepId)
     {
 
         boolean isTablet = isTablet(context);
-        navigationFragment.setSteps(isTablet,getRecipeById(recipeId).getSteps(),stepId);
+        navigationFragment.setSteps(isTablet,getRecipeById(nameRecipe).getSteps(),stepId);
 
 
         navigationContainer.setVisibility(View.VISIBLE);
@@ -265,5 +248,10 @@ public class DescriptionActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putString(NAME_TITLE_KEY,nameRecipe);
 
+    }
 }

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.heinerthebest.heiner.bakingapp.AppWidgetService;
 import com.heinerthebest.heiner.bakingapp.R;
@@ -46,6 +47,9 @@ public class IngredientsFragment extends Fragment {
                 if(mIngredients != null)
                 {
                     AppWidgetService.updateWidget(rootView.getContext(), title,mIngredients);
+
+                    Toast.makeText(getContext(),getString(R.string.done),
+                            Toast.LENGTH_SHORT).show();
 
                 }
             }
