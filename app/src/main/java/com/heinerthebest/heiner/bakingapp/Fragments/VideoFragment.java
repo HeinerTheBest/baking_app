@@ -3,8 +3,6 @@ package com.heinerthebest.heiner.bakingapp.Fragments;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.nfc.Tag;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,8 +24,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.heinerthebest.heiner.bakingapp.Activities.MainActivity;
-import com.heinerthebest.heiner.bakingapp.Activities.StepDetailActivity;
 import com.heinerthebest.heiner.bakingapp.Models.Step;
 import com.heinerthebest.heiner.bakingapp.R;
 

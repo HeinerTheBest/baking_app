@@ -3,8 +3,6 @@ package com.heinerthebest.heiner.bakingapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.heinerthebest.heiner.bakingapp.Models.Recipe;
-
 public class Prefs {
     private static final String PREFS_NAME = "prefs";
     private static final String RECIPE_KEY_TITLE = "ecipe_key_title";
@@ -37,6 +35,13 @@ public class Prefs {
         SharedPreferences preferences = context.getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
         String ingredients = preferences.getString(INGREDIENTS_KEY,"");
         return ingredients;
+    }
+
+    public static String[] loadIngredientsList(Context context)
+    {
+        SharedPreferences preferences = context.getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
+        String ingredients = preferences.getString(INGREDIENTS_KEY,"");
+        return ingredients.split("\n");
     }
 
 

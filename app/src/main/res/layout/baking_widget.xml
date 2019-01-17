@@ -20,15 +20,14 @@
                 android:text="@string/prueba" />
 
 
-    <TextView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/widget_tv_step"
+    <ListView
+        android:id="@+id/recipe_widget_listview"
         android:layout_width="match_parent"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        />
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:divider="@android:color/white"
+        android:dividerHeight="1dp" />
 
 
 </LinearLayout>

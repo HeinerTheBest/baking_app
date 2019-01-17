@@ -7,9 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
-import com.heinerthebest.heiner.bakingapp.Activities.DescriptionActivity;
 import com.heinerthebest.heiner.bakingapp.Activities.MainActivity;
-import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 
 /**
  * Implementation of App Widget functionality.
@@ -33,16 +31,19 @@ public class BakingAppProvider extends AppWidgetProvider {
         // Widgets allow click handlers to only launch pending intents
         views.setOnClickPendingIntent(R.id.widget_tv_steps_description_tittle, pendingIntent);
 
-        views.setTextViewText(R.id.widget_tv_step,ingredientes);
-        views.setOnClickPendingIntent(R.id.widget_tv_step, pendingIntent);
+        /*views.setTextViewText(R.id.widget_tv_step,ingredientes);
+        views.setOnClickPendingIntent(R.id.widget_tv_step, pendingIntent);*/
 
 
         // Initialize the list view
         Intent intent = new Intent(context, AppWidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
+        views.setRemoteAdapter(R.id.recipe_widget_listview,intent);
+
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId,R.id.recipe_widget_listview);
 
     }
 
