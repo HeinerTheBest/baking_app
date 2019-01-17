@@ -27,7 +27,8 @@
         </activity>
         <activity
             android:name=".Activities.StepDetailActivity"
-            android:parentActivityName=".Activities.MainActivity">
+            android:parentActivityName=".Activities.MainActivity"
+            android:supportsPictureInPicture="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activities.MainActivity" />

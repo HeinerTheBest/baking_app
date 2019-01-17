@@ -73,7 +73,7 @@ public class DescriptionActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
         final int idRecipe = getIntent().getIntExtra(Intent.EXTRA_INDEX,0);
 
-        
+
         if(savedInstanceState != null) {
             if(savedInstanceState.containsKey(NAME_TITLE_KEY)) {
                 Log.d(TAG,"Right now I'm in instance");
@@ -88,9 +88,9 @@ public class DescriptionActivity extends AppCompatActivity {
             nameRecipe = getIntent().getStringExtra(getString(R.string.NAME_RECIPE_KEY));
 
         }
-        
-        
-        
+
+
+
         Log.d(TAG,"Right now the name is = "+nameRecipe);
         getRecipes(idRecipe,nameRecipe);
         navigationContainer = findViewById(R.id.bottom_container);

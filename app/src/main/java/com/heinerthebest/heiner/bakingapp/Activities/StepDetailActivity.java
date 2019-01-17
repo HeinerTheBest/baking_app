@@ -1,8 +1,12 @@
 package com.heinerthebest.heiner.bakingapp.Activities;
 
+import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
+import android.os.PersistableBundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,14 +44,10 @@ public class StepDetailActivity extends AppCompatActivity {
 
     int idRecipe, idStep;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
-
-
 
         //Fragments
         navigationFragment = new NavigationFragment();
@@ -96,7 +96,7 @@ public class StepDetailActivity extends AppCompatActivity {
                             setTitle(getRecipeById(idRecipe).getName());
 
 
-                                createStepsDescriptionFragment(idRecipe,0);
+                                createStepsDescriptionFragment(idRecipe,idStep);
                         }
                     });
                 }
@@ -133,7 +133,10 @@ public class StepDetailActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void callNavigationFragment(int recipeId,int stepId)
+
+
+
+    public void callNavigationFragment(int recipeId, int stepId)
     {
         boolean isTablet = isTablet(context);
 
