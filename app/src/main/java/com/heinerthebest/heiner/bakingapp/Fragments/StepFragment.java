@@ -81,7 +81,10 @@ public class StepFragment extends Fragment implements RecipeClickListener
             videoFragment.setVideo(clickedMovieIndex);
         }
         else {
-            ((DescriptionActivity) getActivity()).callStepsDescriptionFragment(recipe.getId(), steps.get(clickedMovieIndex).getId());
+            ((DescriptionActivity) getActivity()).callLastActivity(recipe.getId(), steps.get(clickedMovieIndex).getId());
+
+
+           // ((DescriptionActivity) getActivity()).callStepsDescriptionFragment(recipe.getId(), steps.get(clickedMovieIndex).getId());
         }
     }
 

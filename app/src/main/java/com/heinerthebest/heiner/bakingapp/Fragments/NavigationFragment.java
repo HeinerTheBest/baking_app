@@ -28,6 +28,9 @@ public class NavigationFragment extends Fragment
     VideoFragment videoFragment;
     ImageView superLeft,superright,left,right;
     Boolean isTablet;
+    private static final String IS_TABLET_KEY = "istabletkey";
+
+
 
     public NavigationFragment() {
     }
@@ -49,9 +52,14 @@ public class NavigationFragment extends Fragment
             lastIndex = 0;
         }
 
+        if(savedInstanceState != null) {
+            if(savedInstanceState.containsKey(IS_TABLET_KEY)) {
+                isTablet = savedInstanceState.getBoolean(IS_TABLET_KEY);
+            }
+        }
 
 
-        isTablet =  ((DescriptionActivity)getActivity()).isTablet(rootView.getContext());
+
 
         if(isTablet)
         {
@@ -157,9 +165,16 @@ public class NavigationFragment extends Fragment
         }
     }
 
-    public void setSteps(List<Step> steps,int position) {
+    public void setSteps(Boolean isTablet,List<Step> steps,int position) {
         this.steps = steps;
         index = position;
+        this.isTablet = isTablet;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_TABLET_KEY,isTablet);
     }
 
 }

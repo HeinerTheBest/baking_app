@@ -104,7 +104,7 @@ public class DescriptionActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setTitle(recipes.get(idRecipe).getName());
+                            setTitle(getRecipeById(idRecipe).getName());
                             title = recipes.get(idRecipe).getName();
                             Log.d(TAG,"you do great "+recipes.get(idRecipe).getIngredients().get(0).getIngredient());
                             Log.d(TAG,"you do great "+recipes.get(idRecipe).getSteps().get(0).getShortDescription());
@@ -236,9 +236,11 @@ public class DescriptionActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void callNavigationFragment(int recipeId,int stepId)
+    public void callNavigationFragment( int recipeId,int stepId)
     {
-        navigationFragment.setSteps(getRecipeById(recipeId).getSteps(),stepId);
+
+        boolean isTablet = isTablet(context);
+        navigationFragment.setSteps(isTablet,getRecipeById(recipeId).getSteps(),stepId);
 
 
         navigationContainer.setVisibility(View.VISIBLE);
@@ -252,6 +254,15 @@ public class DescriptionActivity extends AppCompatActivity {
     public String setIngredientText(Ingredient ingredient,int index)
     {
         return index+") "+ingredient.getQuantity()+" "+ingredient.getMeasure()+" of "+ingredient.getIngredient()+"\n";
+    }
+
+    public void callLastActivity(int idRecipe,int idStep)
+    {
+        Log.d("Follow","Recipe id:"+idRecipe);
+        Intent intent = new Intent(context,StepDetailActivity.class);
+        intent.putExtra(Intent.EXTRA_INDEX,idRecipe);
+        intent.putExtra(Intent.EXTRA_INTENT,idStep);
+        startActivity(intent);
     }
 
 

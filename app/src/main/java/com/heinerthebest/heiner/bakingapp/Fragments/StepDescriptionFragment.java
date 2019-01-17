@@ -23,10 +23,8 @@ public class StepDescriptionFragment extends android.support.v4.app.Fragment
     TextView tvStepDescription;
     int recipeId = -1;
     TextView title;
-    private AppDataBase mDb;
 
 
-    private static final String LIFECYCLE_CALLBACK_TEXT_KEY = "callbacks";
     private static final String RECIPE_ARRAY_id_KEY = "recipearraykey";
     private static final String STEP_ARRAY_id_KEY = "steparraykey";
 
@@ -41,14 +39,14 @@ public class StepDescriptionFragment extends android.support.v4.app.Fragment
         View rootView =  inflater.inflate(R.layout.fragment_step_description, container, false);
         tvStepDescription = rootView.findViewById(R.id.tv_steps_description);
         title = rootView.findViewById(R.id.tv_steps_description_head);
-        mDb = AppDataBase.getsInstance(rootView.getContext());
 
 
         if(savedInstanceState != null) {
             if(savedInstanceState.containsKey(RECIPE_ARRAY_id_KEY) && savedInstanceState.containsKey(STEP_ARRAY_id_KEY)) {
                 index = savedInstanceState.getInt(STEP_ARRAY_id_KEY);
+                recipeId = savedInstanceState.getInt(RECIPE_ARRAY_id_KEY);
                 Log.d(TAG, "My recipe id saved is:" + savedInstanceState.getInt(RECIPE_ARRAY_id_KEY) + " and my local recipe id is:" + recipeId);
-                getRecipes(savedInstanceState.getInt(RECIPE_ARRAY_id_KEY));
+                setDescription(index);
             }
         }
         setDescription(index);
@@ -57,27 +55,6 @@ public class StepDescriptionFragment extends android.support.v4.app.Fragment
         return rootView;
     }
 
-
-    private void getRecipes(final int idRecipe)
-    {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if(mDb.recipeDao().loadRecipes().size() > 0)
-                {
-                    Log.d(TAG,"DB is not Empty, Have "+mDb.recipeDao().loadRecipes().size());
-                    steps = mDb.recipeDao().loadRecipes().get(idRecipe).getSteps();
-                    setDescription(index);
-
-                }
-                else
-                {
-                    Log.d(TAG,"DB is empy");
-                }
-            }
-        });
-        thread.start();
-    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
