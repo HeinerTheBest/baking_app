@@ -95,7 +95,7 @@ public class VideoFragment extends Fragment
 
     public void initializePlayer(Uri uri)
     {
-        Log.d(TAG,"My boolean start is:"+mPlayWhenReady+" in the position:"+mCurrentPosition);
+        Log.d(TAG,"My boolean start is:"+mPlayWhenReady+" in the position:"+mCurrentPosition+"and the preff is: "+Prefs.getCurrentVideoPosition(context));
         String userAgent = Util.getUserAgent(context,"BakingApp");
         if(mExoPlayer == null)
         {
@@ -136,9 +136,11 @@ public class VideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        releasePlayer();
         Prefs.setCurrentVideoPosition(context,mCurrentPosition);
         Prefs.setPlaying(context,mPlayWhenReady);
-        releasePlayer();
+        Log.d(TAG,"Befor destroy my current is "+mCurrentPosition);
+
     }
 
     public void setVideo(int i)
@@ -165,20 +167,23 @@ public class VideoFragment extends Fragment
     public void onPause() {
         super.onPause();
         if (Util.SDK_INT <= 23) {
+            releasePlayer();
             Prefs.setCurrentVideoPosition(context,mCurrentPosition);
             Prefs.setPlaying(context,mPlayWhenReady);
-            releasePlayer();
         }
+        Log.d(TAG,"On pause my current is:"+mCurrentPosition);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (Util.SDK_INT > 23) {
+            releasePlayer();
             Prefs.setCurrentVideoPosition(context,mCurrentPosition);
             Prefs.setPlaying(context,mPlayWhenReady);
-            releasePlayer();
         }
+        Log.d(TAG,"On stop my current is:"+mCurrentPosition);
+
     }
 
     private void releasePlayer()
