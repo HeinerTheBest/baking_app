@@ -14,6 +14,7 @@ import com.heinerthebest.heiner.bakingapp.DataBase.AppDataBase;
 import com.heinerthebest.heiner.bakingapp.Fragments.RecipeFragment;
 import com.heinerthebest.heiner.bakingapp.Interfaces.GetDataService;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
+import com.heinerthebest.heiner.bakingapp.Prefs;
 import com.heinerthebest.heiner.bakingapp.R;
 import com.heinerthebest.heiner.bakingapp.RetrofitClientInstance;
 
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recipeFragment = new RecipeFragment();
         context = this;
+        Prefs.setPlaying(context,true);
+        Prefs.setCurrentVideoPosition(context,new Long(0));
         mDb = AppDataBase.getsInstance(getApplicationContext());
         fragmentManager = getSupportFragmentManager();
         setData();

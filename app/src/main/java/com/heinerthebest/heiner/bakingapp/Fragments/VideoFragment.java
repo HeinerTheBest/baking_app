@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.heinerthebest.heiner.bakingapp.Models.Step;
+import com.heinerthebest.heiner.bakingapp.Prefs;
 import com.heinerthebest.heiner.bakingapp.R;
 
 import java.util.List;
@@ -33,23 +34,18 @@ public class VideoFragment extends Fragment
 {
     private String TAG = VideoFragment.class.getSimpleName();
     private List<Step> steps;
-    private int index;
     Context context;
 
     private SimpleExoPlayerView mPlayerView;
     private SimpleExoPlayer mExoPlayer;
-    int recipeId = -1;
-
-    private static final String RECIPE_ARRAY_id_KEY = "recipearraykey";
-    private static final String STEP_ARRAY_id_KEY = "steparraykey";
 
     private long mCurrentPosition = 0;
     private boolean mPlayWhenReady = true;
+    private int stepId = 0;
 
 
-    private static final String CURRENT_POSITION_KEY = "currentpositionkey";
-    private static final String PLAY_WHEN_READY_KEY = "playwhenreadykey";
-    private static final String LOAD_INFO_KEY = "loadinfokey";
+
+
 
 
 
@@ -67,27 +63,15 @@ public class VideoFragment extends Fragment
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(),R.drawable.question_mark));
 
-
-        if(savedInstanceState != null) {
-
-
-            if(savedInstanceState.containsKey(CURRENT_POSITION_KEY) && savedInstanceState.containsKey(PLAY_WHEN_READY_KEY))
-            {
-                mCurrentPosition = savedInstanceState.getLong(CURRENT_POSITION_KEY);
-                mPlayWhenReady = savedInstanceState.getBoolean(PLAY_WHEN_READY_KEY);
-                index = savedInstanceState.getInt(LOAD_INFO_KEY);
-                Log.d(TAG, "My position saved is:" + savedInstanceState.getLong(CURRENT_POSITION_KEY) + " and ready "+savedInstanceState.getBoolean(PLAY_WHEN_READY_KEY) );
-            }
+        mCurrentPosition = Prefs.getCurrentVideoPosition(context);
+        mPlayWhenReady   = Prefs.isPlaying(context);
 
 
-            if(savedInstanceState.containsKey(RECIPE_ARRAY_id_KEY) && savedInstanceState.containsKey(STEP_ARRAY_id_KEY)) {
-                index = savedInstanceState.getInt(STEP_ARRAY_id_KEY);
-                Log.d(TAG, "My recipe id saved is:" + savedInstanceState.getInt(RECIPE_ARRAY_id_KEY) + " I'm here tooo yeah " );
-                setVideo(index);
-            }
-        }
+            stepId = Prefs.getStepId(context);
+            setVideo(stepId);
 
-
+        stepId = Prefs.getStepId(context);
+        setVideo(stepId);
         return rootView;
     }
 
@@ -96,7 +80,7 @@ public class VideoFragment extends Fragment
     public void onStart() {
         super.onStart();
         if (Util.SDK_INT > 23) {
-            setVideo(index);
+            setVideo(stepId);
         }
     }
 
@@ -104,19 +88,9 @@ public class VideoFragment extends Fragment
     public void onResume() {
         super.onResume();
         if ((Util.SDK_INT <= 23 )) {
-            setVideo(index);
+            setVideo(stepId);
         }
 
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(RECIPE_ARRAY_id_KEY,recipeId);
-        outState.putInt(STEP_ARRAY_id_KEY,index);
-        outState.putLong(CURRENT_POSITION_KEY, mCurrentPosition);
-        outState.putBoolean(PLAY_WHEN_READY_KEY, mPlayWhenReady);
-        outState.putInt(LOAD_INFO_KEY,index);
     }
 
     public void initializePlayer(Uri uri)
@@ -134,6 +108,7 @@ public class VideoFragment extends Fragment
                     (context,userAgent),new DefaultExtractorsFactory(),null,null);
             mExoPlayer.prepare(mediaSource);
 
+            Log.d(TAG,"Insside and progres is "+mCurrentPosition);
 
             if (mCurrentPosition != 0)
                 mExoPlayer.seekTo(mCurrentPosition);
@@ -141,11 +116,15 @@ public class VideoFragment extends Fragment
         }
         else
         {
+            Log.d(TAG,"in the else and progres is "+mCurrentPosition);
+
             mExoPlayer.stop();
             MediaSource mediaSource = new ExtractorMediaSource(uri,new DefaultDataSourceFactory
                     (context,userAgent),new DefaultExtractorsFactory(),null,null);
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            if (mCurrentPosition != 0)
+                mExoPlayer.seekTo(mCurrentPosition);
+            mExoPlayer.setPlayWhenReady(mPlayWhenReady);
         }
 
 
@@ -154,9 +133,19 @@ public class VideoFragment extends Fragment
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Prefs.setCurrentVideoPosition(context,mCurrentPosition);
+        Prefs.setPlaying(context,mPlayWhenReady);
+        releasePlayer();
+    }
+
     public void setVideo(int i)
     {
-        index = i;
+        stepId = i;
+        mCurrentPosition = Prefs.getCurrentVideoPosition(context);
+        mPlayWhenReady   = Prefs.isPlaying(context);
         if(steps != null) {
             String uri;
             if (!steps.get(i).getVideoURL().isEmpty()) {
@@ -176,45 +165,44 @@ public class VideoFragment extends Fragment
     public void onPause() {
         super.onPause();
         if (Util.SDK_INT <= 23) {
+            Prefs.setCurrentVideoPosition(context,mCurrentPosition);
+            Prefs.setPlaying(context,mPlayWhenReady);
             releasePlayer();
         }
-
-      /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            getActivity().enterPictureInPictureMode();
-        }*/
-
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (Util.SDK_INT > 23) {
+            Prefs.setCurrentVideoPosition(context,mCurrentPosition);
+            Prefs.setPlaying(context,mPlayWhenReady);
             releasePlayer();
         }
     }
 
-    private void releasePlayer() {
-
-        Log.d(TAG,"the boolean is: "+mExoPlayer.getPlayWhenReady()+" in the position: "+mExoPlayer.getCurrentPosition());
-
-        if (mExoPlayer != null) {
+    private void releasePlayer()
+    {
+        if (mExoPlayer != null)
+        {
             mPlayWhenReady = mExoPlayer.getPlayWhenReady();
             mCurrentPosition = mExoPlayer.getCurrentPosition();
-
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
+        }
+        else
+        {
+            Log.d(TAG,"EXOPLAYER is null the boolean is:null All is null ");
         }
 
     }
 
     public void setSteps(List<Step> steps, int position, int recipeId) {
-        Log.d(TAG,"I was called");
         this.steps = steps;
-        index = position;
-        this.recipeId = recipeId;
 
-        Log.d(TAG, "My position saved is:" + mCurrentPosition+ " and ready "+mPlayWhenReady);
+        //this.StepId = recipeId;
+
 
     }
 

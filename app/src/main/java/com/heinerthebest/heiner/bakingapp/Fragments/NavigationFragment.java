@@ -1,5 +1,6 @@
 package com.heinerthebest.heiner.bakingapp.Fragments;
 
+import android.content.Context;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import com.heinerthebest.heiner.bakingapp.Activities.DescriptionActivity;
 import com.heinerthebest.heiner.bakingapp.Models.Step;
+import com.heinerthebest.heiner.bakingapp.Prefs;
 import com.heinerthebest.heiner.bakingapp.R;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class NavigationFragment extends Fragment
     VideoFragment videoFragment;
     ImageView superLeft,superright,left,right;
     Boolean isTablet;
+    Context context;
     private static final String IS_TABLET_KEY = "istabletkey";
 
 
@@ -43,7 +46,7 @@ public class NavigationFragment extends Fragment
          superright = rootView.findViewById(R.id.btn_super_rigt);
          left = rootView.findViewById(R.id.btn_left);
          right = rootView.findViewById(R.id.btn_right);
-
+            context = rootView.getContext();
         if(steps != null) {
             lastIndex = steps.size() - 1;
         }
@@ -90,6 +93,8 @@ public class NavigationFragment extends Fragment
             public void onClick(View v) {
 
                 index--;
+                Prefs.setPlaying(context,true);
+                Prefs.setCurrentVideoPosition(context,new Long(0));
                 stepDescriptionFragment.setDescription(index);
                 videoFragment.setVideo(index);
                 setButtons();
@@ -100,6 +105,8 @@ public class NavigationFragment extends Fragment
             @Override
             public void onClick(View v) {
                 index = 0;
+                Prefs.setPlaying(context,true);
+                Prefs.setCurrentVideoPosition(context,new Long(0));
                 stepDescriptionFragment.setDescription(index);
                 videoFragment.setVideo(index);
                 setButtons();
@@ -110,6 +117,8 @@ public class NavigationFragment extends Fragment
             @Override
             public void onClick(View v) {
                 index++;
+                Prefs.setPlaying(context,true);
+                Prefs.setCurrentVideoPosition(context,new Long(0));
                 stepDescriptionFragment.setDescription(index);
                 videoFragment.setVideo(index);
                 setButtons();
@@ -120,6 +129,8 @@ public class NavigationFragment extends Fragment
             @Override
             public void onClick(View v) {
                 index = lastIndex;
+                Prefs.setPlaying(context,true);
+                Prefs.setCurrentVideoPosition(context,new Long(0));
                 stepDescriptionFragment.setDescription(index);
                 videoFragment.setVideo(index);
                 setButtons();

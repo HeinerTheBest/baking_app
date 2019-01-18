@@ -24,6 +24,7 @@ import com.heinerthebest.heiner.bakingapp.Fragments.VideoFragment;
 import com.heinerthebest.heiner.bakingapp.Models.Ingredient;
 import com.heinerthebest.heiner.bakingapp.Models.Recipe;
 import com.heinerthebest.heiner.bakingapp.Models.Step;
+import com.heinerthebest.heiner.bakingapp.Prefs;
 import com.heinerthebest.heiner.bakingapp.R;
 
 import java.util.List;
@@ -195,6 +196,7 @@ public class DescriptionActivity extends AppCompatActivity {
     public void createVideoFragment(int recipeId, int stepId, String name)
     {
         videoFragment.setSteps(getRecipeById(name).getSteps(),stepId,recipeId);
+        Prefs.setStepId(context,stepId);
 
         fragmentManager.beginTransaction()
                 .add(R.id.video_container,videoFragment)
